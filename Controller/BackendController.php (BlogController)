@@ -1,0 +1,179 @@
+<?php
+
+namespace App\Http\Controllers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class BlogController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return view('home', [
+            "title" => "Home"
+        ]);
+    }
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+    public function user()
+    {
+        $pengguna = DB::table('users')->get();
+        return view('layouts.user.index', compact('pengguna'));
+    }
+    public function tambahuser()
+    {
+        return view('layouts.user.tambahuser');
+    }
+    public function simpantambahuser(Request $request)
+    {
+        $filter = $request->validate([
+            'name'=>'required',
+            'email'=>'required|email',
+            'password'=>'required',
+        ]);
+        if ($filter){
+            DB::table('users')->insert($filter);
+            return redirect('/user');
+        }
+        return 'gagal';
+    }
+    public function edituser($id)
+    {
+        $toba = DB::table('users')->find($id);
+        return view('layouts.user.edit', compact('toba'));
+    }
+    public function simpanedituser($id, Request $request)
+    {
+        $filter = $request->validate([
+            'name'=>'required',
+            'email'=>'required|email',
+            'password'=>'',
+        ]);
+        if ($filter['password']) {
+            $filter['password'] = bcrypt($request['password']);
+            DB::table('users')->where('id', $id)->update($filter);
+            return redirect('/user');
+        }else{
+            DB::table('users')->where('id', $id)->update($filter);
+            return redirect('/user');
+        }
+    }
+    public function hapususer($id)
+    {
+        DB::table('users')->where('id', $id)->delete();
+        return redirect('/user');
+    }
+    public function kategori()
+    {
+        $data = DB ::table('kategori')->get();
+        return view('layouts.kategori.index', compact('data'));
+    }
+    public function tambahkategori()
+    {
+        return view('layouts.kategori.tambahkategori');
+    }
+    public function simpantambahkategori(Request $request)
+    {
+        $filter = $request->validate([
+            'nama_kategori'=>'required',
+            'Harga'=>'required',
+            'Musim'=>'required',
+            'Gambar'=>'required|file',
+        ]);
+        if($request->file('Gambar')) {
+            $filter['Gambar'] = $request->file('Gambar')->store('post-images');
+        }
+        if ($filter){
+            DB::table('kategori')->insert($filter);
+            return redirect('/kategori');
+        }
+        return 'gagal';
+    }
+    public function editkategori($id)
+    {
+        $toba = DB::table('kategori')->find($id);
+        return view('layouts.kategori.edit', compact('toba'));
+    }
+    public function simpaneditkategori($id, Request $request)
+    {
+        $filter = $request->validate([
+            'nama_kategori' => 'required',
+            'status' => 'required',
+        ]);
+            DB::table('kategori')->where('id', $id)->update($filter);
+            return redirect('/kategori');
+        return 'GAGAL';
+    }
+    public function hapuskategori($id)
+    {
+        DB::table('kategori')->where('id', $id)->delete();
+        return redirect('/kategori');
+    }
+}
